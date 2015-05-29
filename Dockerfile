@@ -1,14 +1,13 @@
-FROM debian:wheezy
+FROM java:openjdk-8
 MAINTAINER Brett Taylor <sweet.brett@gmail.com>
 
-RUN apt-get update -q && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Make it nicer in the container
+ENV DEBIAN_FRONTEND noninteractive
+ENV TERM xterm
 
-ENV KIBANA_VERSION 4.0.2-linux-x64
-RUN curl -s https://download.elastic.co/kibana/kibana/kibana-$KIBANA_VERSION.tar.gz | tar xz -C /tmp
-RUN mv /tmp/kibana-* /app
-
-WORKDIR /app
-CMD '/app/bin/kibana'
+RUN apt-get update && \
+    apt-get install jq && \
+    rm -rf /var/lib/apt/lists/*
+RUN curl -s https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.5.2.tar.gz | tar -C /usr/local -xz
+RUN ln -s /usr/local/elasticsearch-1.5.2 /usr/local/elasticsearch
+RUN mkdir -p /var/data/elasticsearch
